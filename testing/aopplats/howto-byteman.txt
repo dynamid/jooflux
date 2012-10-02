@@ -1,0 +1,13 @@
+Byteman peine a s'attacher a une JVM sur Java 7, aussi penser
+a compiler -source/-target 1.6, et executer les commandes Byteman
+depuis un Java 6.
+
+Definir JAVA_HOME, BYTEMAN_HOME, et mettre BYTEMAN_HOME/bin dans le PATH.
+
+Tip: export JAVA_HOME=`/usr/libexec/java_home -v 1.6`
+
+bminstall.sh -Dorg.jboss.byteman.compile.to.bytecode <PID>
+
+When ready, `bmsubmit.sh Nope.bm`
+
+

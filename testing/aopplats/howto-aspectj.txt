@@ -1,0 +1,2 @@
+Definir ASPECTJ_HOME et buildr test_fibonacci_aspectj
+

@@ -1,0 +1,9 @@
+RULE nope
+CLASS FiboForByteman
+METHOD fib(int)
+AT ENTRY
+HELPER MyHelper
+IF true
+DO called($*);
+ENDRULE
+

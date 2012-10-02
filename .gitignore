@@ -1,0 +1,11 @@
+.rbenv-version
+target
+bin
+reports
+*.iws
+*.iml
+*.ipr
+*.class
+hotspot.log
+.classpath
+.project

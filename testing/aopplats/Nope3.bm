@@ -1,0 +1,9 @@
+RULE nopend
+CLASS FiboForByteman
+METHOD fib(int)
+AT EXIT
+HELPER MyHelper
+IF true
+DO typed(1);
+ENDRULE
+

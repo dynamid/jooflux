@@ -1,0 +1,7 @@
+virtual
+fr/insalyon/telecom/joofluxtest/gui/switcher/MyJLabel.setFontOne:(MyJLabel)void
+fr/insalyon/telecom/joofluxtest/gui/switcher/MyJLabel.setFontTwo:()V
+virtual
+fr/insalyon/telecom/joofluxtest/gui/switcher/MyActionListener.counterIncrement:(MyActionListener)void
+fr/insalyon/telecom/joofluxtest/gui/switcher/MyActionListener.pictureSwitch:()V
+

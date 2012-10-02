@@ -1,0 +1,3 @@
+fr/insalyon/telecom/joofluxtest/fibonacci/Fibonacci.fib:(int)long
+fr.insalyon.telecom.joofluxtest.aspects.EmptyDumpers
+onCall / onReturn
