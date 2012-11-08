@@ -23,11 +23,11 @@ import java.util.Map;
 
 public class JooFluxUtils {
 
-    public static boolean INTERCEPT_CONSTRUCTOR = false;
-    public static boolean INTERCEPT_INVOKESTATIC = true;
-    public static boolean INTERCEPT_INVOKEVIRTUAL = true;
-    public static boolean INTERCEPT_INVOKEINTERFACE = false;
-    public static boolean INTERCEPT_INVOKESPECIAL = false;
+    public static final boolean INTERCEPT_CONSTRUCTOR = false;
+    public static final boolean INTERCEPT_INVOKESTATIC = true;
+    public static final boolean INTERCEPT_INVOKEVIRTUAL = true;
+    public static final boolean INTERCEPT_INVOKEINTERFACE = false;
+    public static final boolean INTERCEPT_INVOKESPECIAL = false;
 
     public static Class<?> classDefinition(MethodHandles.Lookup lookup, String name) throws ClassNotFoundException {
         ClassLoader classLoader = lookup.lookupClass().getClassLoader();
