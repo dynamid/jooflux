@@ -30,7 +30,7 @@ public class InvokeBootstrap {
         Logger.info("lookup=" + lookup + ", name=" + name + ", type=" + type + ", args=" + Arrays.toString(args));
         try {
             MethodHandle methodHandle = lookup.findConstructor(
-                    Class.forName(extractPackageName(name)),
+                    classDefinition(lookup, extractPackageName(name)),
                     type.changeReturnType(void.class)
             );
             totalInitialMethodInterception++;
@@ -46,7 +46,7 @@ public class InvokeBootstrap {
         Logger.info("lookup=" + lookup + ", name=" + name + ", type=" + type + ", args=" + Arrays.toString(args));
         try {
             MethodHandle methodHandle = lookup.findStatic(
-                    Class.forName(extractPackageName(name)),
+                    classDefinition(lookup, extractPackageName(name)),
                     extractMethodName(name),
                     type
             );
@@ -63,7 +63,7 @@ public class InvokeBootstrap {
         Logger.info("lookup=" + lookup + ", name=" + name + ", type=" + type + ", args=" + Arrays.toString(args));
         try {
             MethodHandle methodHandle = lookup.findVirtual(
-                    Class.forName(extractPackageName(name)),
+                    classDefinition(lookup, extractPackageName(name)),
                     extractMethodName(name),
                     type.dropParameterTypes(0, 1)
             );
@@ -80,7 +80,7 @@ public class InvokeBootstrap {
         Logger.info("lookup=" + lookup + ", name=" + name + ", type=" + type + ", args=" + Arrays.toString(args));
         try {
             MethodHandle methodHandle = lookup.findVirtual(
-                    Class.forName(extractPackageName(name)),
+                    classDefinition(lookup, extractPackageName(name)),
                     extractMethodName(name),
                     type.dropParameterTypes(0, 1)
             );
@@ -96,7 +96,7 @@ public class InvokeBootstrap {
     public static CallSite dynvokeSpecial(MethodHandles.Lookup lookup, String name, MethodType type, Object... args) throws NoSuchMethodException, IllegalAccessException, ClassNotFoundException {
         Logger.info("lookup=" + lookup + ", name=" + name + ", type=" + type + ", args=" + Arrays.toString(args));
         try {
-            Class<?> packageClass = Class.forName(extractPackageName(name));
+            Class<?> packageClass = classDefinition(lookup, extractPackageName(name));
             MethodHandle methodHandle = lookup.findSpecial(
                     packageClass,
                     extractMethodName(name),

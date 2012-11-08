@@ -16,6 +16,7 @@ import org.pmw.tinylog.Logger;
 
 import java.lang.invoke.CallSite;
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VolatileCallSite;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +28,11 @@ public class JooFluxUtils {
     public static boolean INTERCEPT_INVOKEVIRTUAL = true;
     public static boolean INTERCEPT_INVOKEINTERFACE = false;
     public static boolean INTERCEPT_INVOKESPECIAL = false;
+
+    public static Class<?> classDefinition(MethodHandles.Lookup lookup, String name) throws ClassNotFoundException {
+        ClassLoader classLoader = lookup.lookupClass().getClassLoader();
+        return Class.forName(name, true, classLoader);
+    }
 
     public static enum InvocationType {
         INVOKECONSTRUCTOR, INVOKESTATIC, INVOKEVIRTUAL, INVOKEINTERFACE, INVOKESPECIAL
