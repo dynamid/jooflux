@@ -15,18 +15,21 @@ package fr.insalyon.telecom.jooflux;
 public class InvokeClassFilter {
 
     private static final String[] filteredPackages = new String[]{
-            "[Ljava/", "java/",
-            "[Lsun/", "sun/",
-            "[Lcom/sun/", "com/sun/",
-            "[Lapple/", "apple/",
-            "[Lcom/apple/", "com/apple/",
-            "[Ljavax/", "javax/",
-            "[Lfr/insalyon/telecom/jooflux/internal/", "fr/insalyon/telecom/jooflux/internal/",
-            "[Lorg/pmw/tinylog/", "org/pmw/tinylog/"
+            "java/",
+            "sun/",
+            "com/sun/",
+            "apple/",
+            "com/apple/",
+            "javax/",
+            "fr/insalyon/telecom/jooflux/internal/",
+            "org/pmw/tinylog/"
     };
 
 
     public static boolean isAllowed(String owner) {
+        if (owner.startsWith("[")) {
+            return false;
+        }
         for (String filter : filteredPackages) {
             if (owner.startsWith(filter)) {
                 return false;
