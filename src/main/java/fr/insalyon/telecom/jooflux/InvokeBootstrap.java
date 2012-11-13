@@ -12,6 +12,7 @@
 
 package fr.insalyon.telecom.jooflux;
 
+import fr.insalyon.telecom.jooflux.internal.InlineCacheCallSite;
 import org.pmw.tinylog.Logger;
 
 import java.lang.invoke.CallSite;
@@ -62,8 +63,9 @@ public class InvokeBootstrap {
     public static CallSite dynvokeVirtual(MethodHandles.Lookup lookup, String name, MethodType type, Object... args) throws NoSuchMethodException, IllegalAccessException, ClassNotFoundException {
         Logger.info("lookup=" + lookup + ", name=" + name + ", type=" + type + ", args=" + Arrays.toString(args));
         try {
+            Class<?> packageClass = classDefinition(lookup, extractPackageName(name));
             MethodHandle methodHandle = lookup.findVirtual(
-                    classDefinition(lookup, extractPackageName(name)),
+                    packageClass,
                     extractMethodName(name),
                     type.dropParameterTypes(0, 1)
             );
@@ -79,14 +81,12 @@ public class InvokeBootstrap {
     public static CallSite dynvokeInterface(MethodHandles.Lookup lookup, String name, MethodType type, Object... args) throws NoSuchMethodException, IllegalAccessException, ClassNotFoundException {
         Logger.info("lookup=" + lookup + ", name=" + name + ", type=" + type + ", args=" + Arrays.toString(args));
         try {
-            MethodHandle methodHandle = lookup.findVirtual(
-                    classDefinition(lookup, extractPackageName(name)),
-                    extractMethodName(name),
-                    type.dropParameterTypes(0, 1)
-            );
+            String methodName = extractMethodName(name);
+            InlineCacheCallSite callSite = new InlineCacheCallSite(lookup, methodName, type);
+            registerCallSite(callSite, InvocationType.INVOKEVIRTUAL, name, type.toString());
             totalInitialMethodInterception++;
             Logger.info("\n      - Total method initial interceptions: " + totalInitialMethodInterception);
-            return makeCallSiteAndRegister(InvocationType.INVOKEINTERFACE, name, type.toString(), methodHandle);
+            return callSite;
         } catch (Throwable t) {
             Logger.error("CallSite bootstrap on lookup=" + lookup + ", name=" + name + ", type=" + type + ", args=" + Arrays.toString(args), t);
             throw t;

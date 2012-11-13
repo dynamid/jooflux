@@ -12,6 +12,7 @@
 
 package fr.insalyon.telecom.jooflux.internal;
 
+import java.lang.invoke.CallSite;
 import java.lang.invoke.VolatileCallSite;
 import java.util.HashSet;
 import java.util.Set;
@@ -41,10 +42,10 @@ public class CallSiteRegistry {
         return CallSiteRegistrySingletonHolder.instance;
     }
 
-    private final ConcurrentHashMap<String, Set<VolatileCallSite>> registry = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Set<CallSite>> registry = new ConcurrentHashMap<>();
 
-    public void put(String target, VolatileCallSite callSite) {
-        registry.putIfAbsent(target, new HashSet<VolatileCallSite>());
+    public void put(String target, CallSite callSite) {
+        registry.putIfAbsent(target, new HashSet<CallSite>());
         registry.get(target).add(callSite);
     }
 
@@ -56,7 +57,7 @@ public class CallSiteRegistry {
         return registry.keySet();
     }
 
-    public Set<VolatileCallSite> callSitesFor(String key) {
+    public Set<CallSite> callSitesFor(String key) {
         return registry.get(key);
     }
 }
