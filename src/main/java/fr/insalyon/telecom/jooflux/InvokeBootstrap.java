@@ -63,9 +63,9 @@ public class InvokeBootstrap {
     public static CallSite dynvokeVirtual(MethodHandles.Lookup lookup, String name, MethodType type, Object... args) throws NoSuchMethodException, IllegalAccessException, ClassNotFoundException {
         Logger.info("lookup=" + lookup + ", name=" + name + ", type=" + type + ", args=" + Arrays.toString(args));
         try {
-            Class<?> packageClass = classDefinition(lookup, extractPackageName(name));
+
             MethodHandle methodHandle = lookup.findVirtual(
-                    packageClass,
+                    classDefinition(lookup, extractPackageName(name)),
                     extractMethodName(name),
                     type.dropParameterTypes(0, 1)
             );

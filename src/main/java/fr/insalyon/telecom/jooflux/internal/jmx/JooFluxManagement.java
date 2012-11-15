@@ -16,7 +16,10 @@ import fr.insalyon.telecom.jooflux.internal.Aspects;
 import fr.insalyon.telecom.jooflux.internal.CallSiteRegistry;
 import org.pmw.tinylog.Logger;
 
-import java.lang.invoke.*;
+import java.lang.invoke.CallSite;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.Set;
 
 public class JooFluxManagement implements JooFluxManagementMXBean {
