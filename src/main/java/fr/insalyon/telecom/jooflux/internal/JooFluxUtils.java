@@ -35,7 +35,21 @@ public class JooFluxUtils {
     }
 
     public static enum InvocationType {
-        INVOKECONSTRUCTOR, INVOKESTATIC, INVOKEVIRTUAL, INVOKEINTERFACE, INVOKESPECIAL
+        INVOKECONSTRUCTOR("constructor"),
+        INVOKESTATIC("static"),
+        INVOKEVIRTUAL("virtual"),
+        INVOKEINTERFACE("vitual"),
+        INVOKESPECIAL("special");
+
+        private final String command;
+
+        private InvocationType(String command) {
+            this.command = command;
+        }
+
+        public String command() {
+            return command;
+        }
     }
 
     private static final Map<InvocationType, Boolean> REGISTER = new HashMap<InvocationType, Boolean>() {
@@ -59,7 +73,7 @@ public class JooFluxUtils {
     public static void registerCallSite(CallSite callSite, InvocationType invocationType, String name, String type) {
         if (REGISTER.get(invocationType)) {
             Logger.info("Registered:" + name + ":" + type + " => " + callSite.getTarget().toString());
-            CallSiteRegistry.getInstance().put(callSiteId(name, type), callSite);
+            CallSiteRegistry.getInstance().put(callSiteId(name, type), invocationType.command(), callSite);
         }
     }
 
@@ -71,7 +85,7 @@ public class JooFluxUtils {
         VolatileCallSite callSite = new VolatileCallSite(methodHandle);
         if (REGISTER.get(invocationType)) {
             Logger.info("Registered:" + name + ":" + type + " => " + methodHandle.toString());
-            CallSiteRegistry.getInstance().put(callSiteId(name, type), callSite);
+            CallSiteRegistry.getInstance().put(callSiteId(name, type), invocationType.command(), callSite);
         }
         return callSite;
     }

@@ -42,6 +42,11 @@ public class JooFluxManagement implements JooFluxManagementMXBean {
     }
 
     @Override
+    public String getCallSiteType(String target) {
+        return registry.callSiteTypeFor(target);
+    }
+
+    @Override
     public void changeCallSiteTarget(String methodType, String oldTarget, String newTarget) {
         String[] split = newTarget.split("\\.");
         String newClassName = split[0].replaceAll("/", ".");
