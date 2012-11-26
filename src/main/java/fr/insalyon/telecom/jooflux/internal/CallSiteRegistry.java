@@ -42,11 +42,11 @@ public class CallSiteRegistry {
         return CallSiteRegistrySingletonHolder.instance;
     }
 
-    private final ConcurrentHashMap<String, Set<CallSite>> registry = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Registration> registry = new ConcurrentHashMap<>();
 
-    public void put(String target, CallSite callSite) {
-        registry.putIfAbsent(target, new HashSet<CallSite>());
-        registry.get(target).add(callSite);
+    public void put(String target, String type, CallSite callSite) {
+        registry.putIfAbsent(target, new Registration(target, type));
+        registry.get(target).getCallSites().add(callSite);
     }
 
     public int numberOfRegisteredCallSites() {
@@ -57,7 +57,15 @@ public class CallSiteRegistry {
         return registry.keySet();
     }
 
-    public Set<CallSite> callSitesFor(String key) {
+    public Registration callSiteRegistrationFor(String key) {
         return registry.get(key);
+    }
+
+    public String callSiteTypeFor(String key) {
+        return registry.get(key).getType();
+    }
+
+    public Set<CallSite> callSitesFor(String key) {
+        return registry.get(key).getCallSites();
     }
 }

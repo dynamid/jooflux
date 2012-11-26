@@ -22,6 +22,8 @@ public interface JooFluxManagementMXBean {
 
     public Set<String> getRegisteredCallSiteKeys();
 
+    public String getCallSiteType(String target);
+
     public void changeCallSiteTarget(String methodType, String oldTarget, String newTarget);
 
     public void applyBeforeAspect(String callSitesKey, String aspectClass, String aspectMethod);
