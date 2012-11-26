@@ -16,10 +16,10 @@ import fr.insalyon.telecom.jooflux.internal.Aspects;
 import fr.insalyon.telecom.jooflux.internal.CallSiteRegistry;
 import org.pmw.tinylog.Logger;
 
+import java.lang.invoke.CallSite;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-import java.lang.invoke.VolatileCallSite;
 import java.util.Set;
 
 public class JooFluxManagement implements JooFluxManagementMXBean {
@@ -79,9 +79,9 @@ public class JooFluxManagement implements JooFluxManagementMXBean {
                     throw new IllegalArgumentException("Wrong method type: " + methodType);
             }
             if (handle != null) {
-                Set<VolatileCallSite> sites = registry.callSitesFor(oldTarget);
+                Set<CallSite> sites = registry.callSitesFor(oldTarget);
                 if (sites != null) {
-                    for (VolatileCallSite site : sites) {
+                    for (CallSite site : sites) {
                         site.setTarget(handle);
                     }
                 } else {
@@ -101,11 +101,11 @@ public class JooFluxManagement implements JooFluxManagementMXBean {
             Class<?> klass = getClass().getClassLoader().loadClass(aspectClass);
             MethodHandles.Lookup lookup = MethodHandles.lookup();
             MethodHandle handle = lookup.findStatic(klass, aspectMethod, MethodType.methodType(Object[].class, Object[].class));
-            Set<VolatileCallSite> callSites = registry.callSitesFor(callSitesKey);
+            Set<CallSite> callSites = registry.callSitesFor(callSitesKey);
             if (callSites == null) {
                 throw new IllegalArgumentException("No call sites have been registered for key: " + callSitesKey);
             }
-            for (VolatileCallSite callSite : callSites) {
+            for (CallSite callSite : callSites) {
                 callSite.setTarget(Aspects.before(callSite.getTarget(), handle));
             }
         } catch (Throwable t) {
@@ -119,11 +119,11 @@ public class JooFluxManagement implements JooFluxManagementMXBean {
             Class<?> klass = getClass().getClassLoader().loadClass(aspectClass);
             MethodHandles.Lookup lookup = MethodHandles.lookup();
             MethodHandle handle = lookup.findStatic(klass, aspectMethod, MethodType.methodType(Object.class, Object.class));
-            Set<VolatileCallSite> callSites = registry.callSitesFor(callSitesKey);
+            Set<CallSite> callSites = registry.callSitesFor(callSitesKey);
             if (callSites == null) {
                 throw new IllegalArgumentException("No call sites have been registered for key: " + callSitesKey);
             }
-            for (VolatileCallSite callSite : callSites) {
+            for (CallSite callSite : callSites) {
                 callSite.setTarget(Aspects.after(callSite.getTarget(), handle));
             }
         } catch (Throwable t) {

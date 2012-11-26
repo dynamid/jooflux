@@ -26,7 +26,7 @@ public class JooFluxUtils {
     public static final boolean INTERCEPT_CONSTRUCTOR = false;
     public static final boolean INTERCEPT_INVOKESTATIC = true;
     public static final boolean INTERCEPT_INVOKEVIRTUAL = true;
-    public static final boolean INTERCEPT_INVOKEINTERFACE = false;
+    public static final boolean INTERCEPT_INVOKEINTERFACE = true;
     public static final boolean INTERCEPT_INVOKESPECIAL = false;
 
     public static Class<?> classDefinition(MethodHandles.Lookup lookup, String name) throws ClassNotFoundException {
@@ -56,11 +56,22 @@ public class JooFluxUtils {
         return name.split("\\.")[1];
     }
 
+    public static void registerCallSite(CallSite callSite, InvocationType invocationType, String name, String type) {
+        if (REGISTER.get(invocationType)) {
+            Logger.info("Registered:" + name + ":" + type + " => " + callSite.getTarget().toString());
+            CallSiteRegistry.getInstance().put(callSiteId(name, type), callSite);
+        }
+    }
+
+    private static String callSiteId(String name, String type) {
+        return name + ":" + type;
+    }
+
     public static CallSite makeCallSiteAndRegister(InvocationType invocationType, String name, String type, MethodHandle methodHandle) {
         VolatileCallSite callSite = new VolatileCallSite(methodHandle);
         if (REGISTER.get(invocationType)) {
             Logger.info("Registered:" + name + ":" + type + " => " + methodHandle.toString());
-            CallSiteRegistry.getInstance().put(name + ":" + type, callSite);
+            CallSiteRegistry.getInstance().put(callSiteId(name, type), callSite);
         }
         return callSite;
     }

@@ -192,7 +192,7 @@ task :test_fibonacci_clojure => :package do
   display "Fibonacci on Clojure"
   sh "java -jar #{CLOJURE} testing/dynlangs/fibo.clj"
   display "Fibonacci on Clojure instrumented by JooFlux"
-  sh "java -noverify #{LOGGING_FLAG} -javaagent:target/jooflux-#{JOOFLUX_VERSION}.jar -jar #{CLOJURE} testing/dynlangs/fibo.clj"
+  sh "java -noverify #{LOGGING_FLAG} -javaagent:target/jooflux-#{JOOFLUX_VERSION}.jar -Dtinylog.level=WARNING -Xbootclasspath/a:#{CLOJURE}:target/jooflux-#{JOOFLUX_VERSION}.jar clojure.main testing/dynlangs/fibo.clj"
 end
 
 task :test_fibonacci_jython do
@@ -227,7 +227,7 @@ end
 
 task :test_clj => :package do
   display "Clojure instrumented by JooFlux"
-  sh "java -noverify #{LOGGING_FLAG} -javaagent:target/jooflux-#{JOOFLUX_VERSION}.jar -jar #{CLOJURE}"
+  sh "java -noverify #{LOGGING_FLAG} -javaagent:target/jooflux-#{JOOFLUX_VERSION}.jar -Dtinylog.level=WARNING -Xbootclasspath/a:#{CLOJURE}:target/jooflux-#{JOOFLUX_VERSION}.jar clojure.main"
 end
 
 def launch_test(name, main_class, *extra_args)
