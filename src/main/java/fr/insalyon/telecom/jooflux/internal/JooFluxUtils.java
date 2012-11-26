@@ -38,7 +38,7 @@ public class JooFluxUtils {
         INVOKECONSTRUCTOR("constructor"),
         INVOKESTATIC("static"),
         INVOKEVIRTUAL("virtual"),
-        INVOKEINTERFACE("vitual"),
+        INVOKEINTERFACE("virtual"),
         INVOKESPECIAL("special");
 
         private final String command;
