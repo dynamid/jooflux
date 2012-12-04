@@ -14,10 +14,12 @@ Please note that:
 
 1. we reserve the right to refuse contributions, and
 2. making a pull request implicitly means that you are legally entitled to do so, and
-3. you implicitly accept the project license, and
-4. you either:
-    a. implicitly transfer the copyright to the project owners, or you
-    b. explicitly mention your licensing choices as part of the pull request.
+3. you implicitly accept the project license.
+
+You either:
+
+1. implicitly transfer the copyright to the project owners, or you
+2. explicitly mention your licensing choices as part of the pull request.
 
 ## Commits
 
