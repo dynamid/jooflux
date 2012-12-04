@@ -72,7 +72,7 @@ If you would like to report issues, please do so with the
 
 ## Contributing
 
-We welcome contributions, see [CONTRIBUTING.markdown]([CONTRIBUTING.markdown) for instructions.
+We welcome contributions, see `CONTRIBUTING.markdown` for instructions.
 
 ## Building and dependencies
 
