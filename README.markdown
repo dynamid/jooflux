@@ -72,18 +72,7 @@ If you would like to report issues, please do so with the
 
 ## Contributing
 
-We welcome contributions.
-
-We won't accept patches sent by email or even modification in the form of
-*whole modified files*.
-
-Any contribution should be offered through
-[a pull request on our main repository](https://github.com/dynamid/jooflux/pulls).
-
-Please note that:
-
-1. we reserve the right to refuse contributions, and
-2. making a pull request implicitly means that you are legally entitled to do so.
+We welcome contributions, see [CONTRIBUTING.markdown]([CONTRIBUTING.markdown) for instructions.
 
 ## Building and dependencies
 
