@@ -14,8 +14,6 @@ that focuses on the design and implementation of middlewares for dynamic environ
 
 ## Current status
 
-We demonstrated initial developments of JooFlux at the [Devoxx France 2012 conference](http://www.devoxx.fr/).
-
 The current iteration of the source code is only a proof-of-concept of leveraging `invokedynamic`
 for aspect-oriented programming and live code patching. **It is not production-ready**, and
 further developments need to be made to turn JooFlux into a usable product.
@@ -33,6 +31,15 @@ depends on funding.
 
 We have no external funding for the JooFlux project at the moment, so if you feel like sustaining
 our research on this project, feel-free to contact us!
+
+## Publications
+
+* Julien Ponge and Frédéric Le Mouël. JooFlux : modification de code à chaud et injection d’aspects
+  directement dans une JVM 7. In Proceedings of Conférence d’informatique en Parallélisme, Architecture
+  et Système (ComPAS) - Conférence Française en Systèmes d’Exploitation (CFSE). Grenoble, January 2013.
+  [HAL INRIA entry](http://hal.inria.fr/hal-00759402).
+* Julien Ponge and Frédéric Le Mouël. JooFlux: Hijacking Java 7 InvokeDynamic To Support Live Code Modifications. 2012. [Research report on arXiv](http://fr.arxiv.org/abs/1210.1039)
+* We demonstrated initial developments of JooFlux at the [Devoxx France 2012 conference](http://www.devoxx.fr/).
 
 ## License
 
