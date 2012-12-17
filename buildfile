@@ -21,6 +21,7 @@ repositories.remote << 'http://mirrors.ibiblio.org/maven2/'
 
 SCIMARK_URL = 'http://math.nist.gov/scimark2/scimark2lib.jar'
 CLOJURE_URL = 'http://repo1.maven.org/maven2/org/clojure/clojure/1.4.0/clojure-1.4.0.jar'
+DACAPO_URL = 'http://heanet.dl.sourceforge.net/project/dacapobench/9.12-bach/dacapo-9.12-bach.jar'
 
 # ..................................................................................... #
 # Modules
@@ -113,11 +114,11 @@ end
 
 DACOPA_LIB = 'lib/dacapo-9.12-bach.jar'
 
-task :test_dacopa => :package do
-  display "Dacopa"
-  sh "java -noverify -jar #{DACOPA_LIB} jython"
-  display "Dacopa with JooFlux agent"
-  sh "java -noverify #{LOGGING_FLAG} -javaagent:target/jooflux-#{JOOFLUX_VERSION}.jar -cp #{ASM_LIB} -jar #{DACOPA_LIB} jython"
+task :test_dacapo => :package do
+  display "Dacapo"
+  sh "java -noverify -jar #{DACOPA_LIB} -C avrora"
+  display "Dacapo with JooFlux agent"
+  sh "java -noverify -Dtinylog.level=ERROR -javaagent:target/jooflux-#{JOOFLUX_VERSION}.jar -cp #{ASM_LIB} -jar #{DACOPA_LIB} -C avrora"
 end
 
 task :test_forkjoin => :package do
@@ -245,6 +246,7 @@ def display(message)
 end
 
 task :fetch_test_libs do
+  sh "curl -o #{DACOPA_LIB} #{DACAPO_URL}"
   sh "curl -o #{SCIMARK2_LIB} #{SCIMARK_URL}"
   sh "curl -o #{CLOJURE} #{CLOJURE_URL}"
 end
