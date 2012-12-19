@@ -112,13 +112,19 @@ task :test_scimark2_large => :package do
   sh "java -noverify #{LOGGING_FLAG} -javaagent:target/jooflux-#{JOOFLUX_VERSION}.jar -cp #{ASM_LIB}:#{SCIMARK2_LIB} jnt.scimark2.commandline -large"
 end
 
-DACOPA_LIB = 'lib/dacapo-9.12-bach.jar'
+DACAPO_LIB = 'lib/dacapo-9.12-bach.jar'
 
 task :test_dacapo => :package do
   display "Dacapo"
-  sh "java -noverify -jar #{DACOPA_LIB} -C avrora"
+  sh "java -noverify -jar #{DACAPO_LIB} -C luindex"
+  sh "java -noverify -jar #{DACAPO_LIB} -C lusearch"
+  sh "java -noverify -jar #{DACAPO_LIB} -C sunflow"
+  sh "java -noverify -jar #{DACAPO_LIB} -C avrora"
   display "Dacapo with JooFlux agent"
-  sh "java -noverify -Dtinylog.level=ERROR -javaagent:target/jooflux-#{JOOFLUX_VERSION}.jar -cp #{ASM_LIB} -jar #{DACOPA_LIB} -C avrora"
+  sh "java -noverify -Dtinylog.level=ERROR -javaagent:target/jooflux-#{JOOFLUX_VERSION}.jar -cp #{ASM_LIB} -jar #{DACAPO_LIB} -C luindex"
+  sh "java -noverify -Dtinylog.level=ERROR -javaagent:target/jooflux-#{JOOFLUX_VERSION}.jar -cp #{ASM_LIB} -jar #{DACAPO_LIB} -C lusearch"
+  sh "java -noverify -Dtinylog.level=ERROR -javaagent:target/jooflux-#{JOOFLUX_VERSION}.jar -cp #{ASM_LIB} -jar #{DACAPO_LIB} -C sunflow"
+  sh "java -noverify -Dtinylog.level=ERROR -javaagent:target/jooflux-#{JOOFLUX_VERSION}.jar -cp #{ASM_LIB} -jar #{DACAPO_LIB} -C avrora"
 end
 
 task :test_forkjoin => :package do
