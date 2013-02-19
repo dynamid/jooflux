@@ -14,7 +14,7 @@
 # General definitions
 # ..................................................................................... #
 
-JOOFLUX_VERSION = 'r1'
+JOOFLUX_VERSION = 'r2-SNAPSHOT'
 ASM_LIB = 'lib/asm-all-4.0.jar'
 TINYLOG_LIB = 'lib/tinylog.jar'
 repositories.remote << 'http://mirrors.ibiblio.org/maven2/'
