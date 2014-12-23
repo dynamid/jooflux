@@ -1,0 +1,49 @@
+/* ..................................................................................... #
+#
+# JooFlux
+#
+# Copyright (c) 2012 Institut National des Sciences Appliquées de Lyon (INSA-Lyon)
+# Copyright (c) 2012 Julien Ponge, INSA-Lyon
+# Copyright (c) 2012 Frédéric Le Mouël, INSA-Lyon
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# ..................................................................................... #
+# Client
+# ..................................................................................... */
+
+ext {
+    JOOFLUX_CLIENT_VERSION = "jooflux-${rootProject.JOOFLUX_VERSION}"
+}
+
+version = JOOFLUX_CLIENT_VERSION
+
+dependencies {
+    compile 'com.googlecode.json-simple:json-simple:1.1.1'
+    compile 'org.tinylog:tinylog:0.8'
+    testCompile 'junit:junit:4.10'
+    testCompile 'org.powermock:powermock-api-mockito:1.6.1'
+    testCompile 'org.powermock:powermock-module-junit4:1.6.1'
+}
+
+jar {
+    from("${rootProject.projectDir}/LICENSE") {
+        into "META-INF"
+    }
+    manifest {
+        attributes(
+            "Specification-Title": 'Jooflux',
+            "Specification-Version": JOOFLUX_VERSION,
+            "Specification-Vendor": "INSA-Lyon",
+            "Implementation-Title": "JooFlux",
+            "Implementation-Version": JOOFLUX_VERSION,
+            "Implementation-Vendor": "INSA-Lyon",
+            "Copyright": 'Copyright (c) 2012 INSA-Lyon',
+            "License": 'Mozilla Public License Version 2.0',
+            "License-URL": 'http://www.mozilla.org/MPL/2.0/',
+            "Premain-Class": 'fr.insalyon.telecom.jooflux.InvokeInterceptorAgent'
+        )
+    }
+}

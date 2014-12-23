@@ -13,6 +13,7 @@
 package fr.insalyon.telecom.jooflux;
 
 import fr.insalyon.telecom.jooflux.internal.jmx.JooFluxManagement;
+import fr.insalyon.telecom.jooflux.tcp.JoofluxManagementServer;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -27,5 +28,8 @@ public class InvokeInterceptorAgent {
         MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
         ObjectName name = new ObjectName("fr.insalyon.telecom.jooflux.internal.jmx:type=JooFluxManagement");
         mBeanServer.registerMBean(new JooFluxManagement(), name);
+
+        JoofluxManagementServer server = new JoofluxManagementServer();
+        new Thread(server).start();
     }
 }
