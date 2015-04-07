@@ -10,8 +10,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import java.util.Scanner;
-
 public class FiboForAspectJ {
 
     public static long fib(int n) throws Exception {

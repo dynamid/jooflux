@@ -1,0 +1,375 @@
+/* ..................................................................................... #
+#
+# JooFlux
+#
+# Copyright (c) 2012 Institut National des Sciences Appliquées de Lyon (INSA-Lyon)
+# Copyright (c) 2012 Julien Ponge, INSA-Lyon
+# Copyright (c) 2012 Frédéric Le Mouël, INSA-Lyon
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# ..................................................................................... #
+# Testing
+# ..................................................................................... */
+
+ext {
+    JOOFLUX_TESTING_VERSION = "jooflux-${rootProject.JOOFLUX_VERSION}"
+
+    DACAPO_LIB = "${projectDir}/lib/dacapo-9.12-bach.jar"
+    DACAPO_URL = 'http://heanet.dl.sourceforge.net/project/dacapobench/9.12-bach/dacapo-9.12-bach.jar'
+}
+
+version = JOOFLUX_TESTING_VERSION
+
+sourceSets {
+    main {
+        java {
+            srcDir 'fr/insalyon/telecom/joofluxtest'
+        }
+    }
+}
+
+dependencies {
+    compile 'org.clojure:clojure:1.4.0'
+    compile 'org.python:jython-standalone:2.5.2'
+    compile 'org.codehaus.groovy:groovy:2.3.9'
+    compile 'gov.nist.math:scimark:2.0'
+
+    def f3 = new File(DACAPO_LIB)
+    if (!f3.exists()) {
+        new URL(DACAPO_URL).withInputStream { i -> f3.withOutputStream { it << i } }
+    }
+    compile files(DACAPO_LIB)
+}
+
+jar {
+    from("${rootProject.projectDir}/LICENSE") {
+        into "META-INF"
+    }
+    manifest {
+        attributes(
+                "Specification-Title": 'Jooflux',
+                "Specification-Version": JOOFLUX_VERSION,
+                "Specification-Vendor": "INSA-Lyon",
+                "Implementation-Title": "JooFlux",
+                "Implementation-Version": JOOFLUX_VERSION,
+                "Implementation-Vendor": "INSA-Lyon",
+                "Copyright": 'Copyright (c) 2012 INSA-Lyon',
+                "License": 'Mozilla Public License Version 2.0',
+                "License-URL": 'http://www.mozilla.org/MPL/2.0/',
+                "Premain-Class": 'fr.insalyon.telecom.jooflux.InvokeInterceptorAgent'
+        )
+    }
+}
+
+/* ..................................................................................... #
+# Tests
+# ..................................................................................... */
+
+// The last task to adapt to Gradle
+task test_forkjoin << {
+    println "\n** ForkJoin Tests Requirements **"
+    println "   Set HOTSPOT_PATH to point to the OpenJDK hotspot module."
+    println "   Default is `../jdk7/macosx-port/hotspot`"
+
+    def jdk_hotspot_path = System.getenv("HOTSPOT_PATH") ?: "../jdk7/macosx-port/hotspot"
+    println "   Current is `${jdk_hotspot_path}`"
+
+    def args = [
+            jdk_hotspot_path,
+            'List',
+            '10',
+            '-Xmx2048M -Xms512M'
+    ]
+
+    launch_test('ForkJoin', 'fr.insalyon.telecom.joofluxtest.forkjoin.WordCounter', args)
+    launch_test_with_agent('ForkJoin', 'fr.insalyon.telecom.joofluxtest.forkjoin.WordCounter', args)
+}
+test_forkjoin.description 'Runs the ForkJoin Test with and without the Jooflux agent'
+
+task test_dacapo << {
+    configurations.compile.resolve().each {
+        String absolutPath = it.getAbsolutePath();
+        if (absolutPath.contains("asm-all")) {
+            extensions.ASM = absolutPath
+        }
+    }
+
+    println "DaCapo"
+
+    exec {
+        commandLine 'java', '-noverify', '-jar', DACAPO_LIB, '-C', 'luindex'
+    }
+    exec {
+        commandLine 'java', '-noverify', '-jar', DACAPO_LIB, '-C', 'lusearch'
+    }
+    exec {
+        commandLine 'java', '-noverify', '-jar', DACAPO_LIB, '-C', 'sunflow'
+    }
+    exec {
+        commandLine 'java', '-noverify', '-jar', DACAPO_LIB, '-C', 'avrora'
+    }
+
+    println "DaCapo with JooFlux agent"
+    exec {
+        commandLine 'java', '-noverify', '-Dtinylog.level=ERROR', "-javaagent:${rootProject.buildDir}/libs/jooflux-${rootProject.JOOFLUX_VERSION}.jar", '-cp', ASM, '-jar', DACAPO_LIB, '-C', 'luindex'
+    }
+    exec {
+        commandLine 'java', '-noverify', '-Dtinylog.level=ERROR', "-javaagent:${rootProject.buildDir}/libs/jooflux-${rootProject.JOOFLUX_VERSION}.jar", '-cp', ASM, '-jar', DACAPO_LIB, '-C', 'lusearch'
+    }
+    exec {
+        commandLine 'java', '-noverify', '-Dtinylog.level=ERROR', "-javaagent:${rootProject.buildDir}/libs/jooflux-${rootProject.JOOFLUX_VERSION}.jar", '-cp', ASM, '-jar', DACAPO_LIB, '-C', 'sunflow'
+    }
+    exec {
+        commandLine 'java', '-noverify', '-Dtinylog.level=ERROR', "-javaagent:${rootProject.buildDir}/libs/jooflux-${rootProject.JOOFLUX_VERSION}.jar", '-cp', ASM, '-jar', DACAPO_LIB, '-C', 'avrora'
+    }
+}
+test_dacapo.description 'Runs several DaCapo benchmarks with and without the Jooflux agent'
+
+task test_scimark2_large << {
+    configurations.compile.resolve().each {
+        String absolutPath = it.getAbsolutePath();
+        if (absolutPath.contains("scimark")) {
+            extensions.SCIMARK = absolutPath
+        }
+    }
+
+    println "SciMark 2.0 Large"
+    javaexec {
+        jvmArgs '-noverify', '-cp'
+        main = 'jnt.scimark2.commandline'
+        classpath = files(SCIMARK)
+        args ['-large']
+    }
+
+    println "SciMark 2.0 Large with JooFlux agent"
+    javaexec {
+        jvmArgs '-noverify', "${LOGGING_FLAG}", "-javaagent:${rootProject.buildDir}/libs/jooflux-${rootProject.JOOFLUX_VERSION}.jar", '-cp'
+        main = 'jnt.scimark2.commandline'
+        classpath = files(SCIMARK)
+        args ['-large']
+    }
+}
+test_scimark2_large.description 'Runs "large" benchmarks using SciMark 2.0 with and without the Jooflux agent'
+
+task test_scimark2 << {
+    configurations.compile.resolve().each {
+        String absolutPath = it.getAbsolutePath();
+        if (absolutPath.contains("scimark")) {
+            extensions.SCIMARK = absolutPath
+        }
+        else if (absolutPath.contains("asm-all")) {
+            extensions.ASM = absolutPath
+        }
+    }
+
+    println "SciMark 2.0"
+    javaexec {
+        jvmArgs '-noverify', '-cp'
+        main = 'jnt.scimark2.commandline'
+        classpath = files(SCIMARK)
+    }
+
+    println "SciMark 2.0 with JooFlux agent"
+    javaexec {
+        jvmArgs '-noverify', LOGGING_FLAG, "-javaagent:${rootProject.buildDir}/libs/jooflux-${rootProject.JOOFLUX_VERSION}.jar", '-cp'
+        main = 'jnt.scimark2.commandline'
+        classpath = files("${ASM}:${SCIMARK}")
+    }
+}
+test_scimark2.description 'Runs benchmarks using SciMark 2.0 with and without the Jooflux agent'
+
+task test_clj << {
+    configurations.compile.resolve().each {
+        String absolutPath = it.getAbsolutePath();
+        if (absolutPath.contains("clojure")) {
+            extensions.CLOJURE = absolutPath
+        }
+    }
+
+    println "Clojure instrumented by JooFlux"
+
+    javaexec {
+        jvmArgs '-noverify', LOGGING_FLAG, "-javaagent:${rootProject.buildDir}/libs/jooflux-${rootProject.JOOFLUX_VERSION}.jar", '-Dtinylog.level=WARNING', "-Xbootclasspath/a:${CLOJURE}:${rootProject.buildDir}/libs/jooflux-${rootProject.JOOFLUX_VERSION}.jar"
+        main = "clojure.main"
+    }
+}
+test_clj.description 'Runs Clojure instrumented by Jooflux'
+
+task test_fibonacci_javascript << {
+    println "Fibonaci on Javascript"
+    exec {
+        commandLine "node", "dynlangs/fibo.js"
+    }
+}
+test_fibonacci_javascript.description 'Runs a Fibonacci calculation on Javascript'
+
+task test_reflective_fibonacci_groovy << {
+    configurations.compile.resolve().each {
+        String absolutPath = it.getAbsolutePath();
+        if (absolutPath.contains("groovy")) {
+            extensions.GROOVY = absolutPath
+        }
+    }
+
+    println "Reflective Fibonacci on Groovy"
+    javaexec {
+        jvmArgs '-jar'
+        main = GROOVY
+        args = ['dynlangs/fibo-reflective.groovy']
+    }
+}
+test_reflective_fibonacci_groovy.description 'Runs a Fibonacci calculation on Groovy using Reflexion API'
+
+task test_fibonacci_groovy << {
+    println "Fibonacci on Groovy"
+    exec {
+        commandLine "groovy", "dynlangs/fibo.groovy"
+    }
+}
+test_fibonacci_groovy.description 'Runs a Fibonacci calculation on Groovy'
+
+task test_reflective_fibonacci_jruby << {
+    println "Reflective Fibonacci on JRuby"
+    exec {
+        commandLine "jruby", "dynlangs/fibo-reflective.rb"
+    }
+}
+test_reflective_fibonacci_jruby.description 'Runs a Fibonacci calculation on JRuby using Reflexion API'
+
+task test_fibonacci_jruby << {
+    println "Fibonacci on JRuby"
+    exec {
+        commandLine "jruby", "dynlangs/fibo.rb"
+    }
+}
+test_fibonacci_jruby.description 'Runs a Fibonacci calculation on JRuby'
+
+task test_fibonacci_jython << {
+    configurations.compile.resolve().each {
+        String absolutPath = it.getAbsolutePath();
+        if (absolutPath.contains("jython")) {
+            extensions.JYTHON = absolutPath
+        }
+    }
+
+    println "Fibonacci on Jython"
+    javaexec {
+        jvmArgs '-jar'
+        main = JYTHON
+        args = ['dynlangs/fibo.py']
+    }
+}
+test_fibonacci_jython.description 'Runs a Fibonacci calculation on Jython'
+
+task test_fibonacci_clojure << {
+    configurations.compile.resolve().each {
+        String absolutPath = it.getAbsolutePath();
+        if (absolutPath.contains("clojure")) {
+            extensions.CLOJURE = absolutPath
+        }
+    }
+
+    println "Fibonacci on Clojure"
+    javaexec {
+        jvmArgs '-jar'
+        main = CLOJURE
+        args = ['dynlangs/fibo.clj']
+    }
+
+    println "Fibonacci on Clojure instrumented by JooFlux"
+    javaexec {
+        jvmArgs '-noverify', LOGGING_FLAG, "-javaagent:${rootProject.buildDir}/libs/jooflux-${rootProject.JOOFLUX_VERSION}.jar", '-Dtinylog.level=WARNING', "-Xbootclasspath/a:${CLOJURE}:${rootProject.buildDir}/libs/jooflux-${rootProject.JOOFLUX_VERSION}.jar"
+        main = 'clojure.main'
+        args = ['dynlangs/fibo.clj']
+    }
+}
+test_fibonacci_clojure {}.description 'Runs a Fibonacci calculation on Clojure with and without the Jooflux agent'
+
+task test_fibonacci_aspectj << {
+    println "Fibonacci intercepted by AspecJ (before)"
+    exec {
+        commandLine "ajc", "-cp", "${System.env.ASPECTJ_HOME}/lib/aspectjrt.jar:aopplats", "aopplats/FiboForAspectJ.java", "aopplats/BTracer.aj"
+    }
+    exec {
+        commandLine "aj", "-cp", "${System.env.ASPECTJ_HOME}/lib/aspectjweaver.jar:aopplats", "FiboForAspectJ"
+    }
+
+    println "Fibonacci intercepted by AspecJ (after)"
+    exec {
+        commandLine "ajc", "-cp", "${System.env.ASPECTJ_HOME}/lib/aspectjrt.jar:aopplats", "aopplats/FiboForAspectJ.java", "aopplats/ATracer.aj"
+    }
+    exec {
+        commandLine "aj", "-cp", "${System.env.ASPECTJ_HOME}/lib/aspectjweaver.jar:aopplats", "FiboForAspectJ"
+    }
+
+    println "Fibonacci intercepted by AspecJ (before + after)"
+    exec {
+        commandLine "ajc", "-cp", "${System.env.ASPECTJ_HOME}/lib/aspectjrt.jar:aopplats", "aopplats/FiboForAspectJ.java", "aopplats/ABTracer.aj"
+    }
+    exec {
+        commandLine "aj", "-cp", "${System.env.ASPECTJ_HOME}/lib/aspectjweaver.jar:aopplats", "FiboForAspectJ"
+    }
+}
+test_fibonacci_aspectj.description 'Runs a Fibonacci calculation intercepted by AspecJ'
+
+task test_reflective_fibonacci << {
+    launch_test('Reflective Fibonacci', 'fr.insalyon.telecom.joofluxtest.reflection.ReflectiveFibonacci')
+    launch_test_with_agent('Reflective Fibonacci', 'fr.insalyon.telecom.joofluxtest.reflection.ReflectiveFibonacci')
+}
+test_reflective_fibonacci.description 'Runs a Fibonacci calculation on Java using Reflexion API with and without the Jooflux agent'
+
+task test_classloading << {
+    launch_test('Class.forName Loading', 'fr.insalyon.telecom.joofluxtest.classloading.TestClassLoading')
+    launch_test_with_agent('Class.forName Loading', 'fr.insalyon.telecom.joofluxtest.classloading.TestClassLoading')
+}
+test_classloading.description 'Loads a set of classes with and without the Jooflux agent'
+
+task test_helloworld << {
+    launch_test('HelloWorld', 'fr.insalyon.telecom.joofluxtest.helloworld.TestHelloWorld')
+    launch_test_with_agent('HelloWorld', 'fr.insalyon.telecom.joofluxtest.helloworld.TestHelloWorld')
+}
+test_helloworld.description 'Runs a simple "Hello World" project with and without the Jooflux agent'
+
+task test_fibonacci << {
+    launch_test('Fibonacci', 'fr.insalyon.telecom.joofluxtest.fibonacci.TestRecursive')
+    launch_test_with_agent('Fibonacci', 'fr.insalyon.telecom.joofluxtest.fibonacci.TestRecursive')
+}
+test_fibonacci.description 'Runs a classic Java Fibonacci calculation with and without the Jooflux agent'
+
+task test_counterloop << {
+    launch_test_with_agent('Counter loop', 'fr.insalyon.telecom.joofluxtest.counterloop.CounterLoop')
+}
+test_counterloop.description 'Runs a counterloop instrumented by Jooflix'
+
+task test_selfswitcher << {
+    launch_test_with_agent('Self switcher', 'fr.insalyon.telecom.joofluxtest.self.switcher.Main')
+}
+test_selfswitcher.description 'Runs a counter instrumented  by Jooflux'
+
+task test_guiswitcher << {
+    launch_test_with_agent('GUI switcher', 'fr.insalyon.telecom.joofluxtest.gui.switcher.MyGUI')
+}
+test_guiswitcher.description 'Runs a simple GUI allowing to change button\'s style using Jooflux'
+
+def launch_test(name, main_class, extra_args = []) {
+    println name
+    javaexec {
+        jvmArgs '-noverify', '-cp'
+        classpath = files("${buildDir}/libs/testing-${JOOFLUX_TESTING_VERSION}.jar")
+        main = main_class
+        args = extra_args
+    }
+}
+
+def launch_test_with_agent(name, main_class, extra_args = []) {
+    println name + " with JooFlux agent"
+    javaexec {
+        jvmArgs '-noverify', LOGGING_FLAG, "-javaagent:${rootProject.buildDir}/libs/jooflux-${rootProject.JOOFLUX_VERSION}.jar", '-cp'
+        classpath = files("${buildDir}/libs/testing-${JOOFLUX_TESTING_VERSION}.jar")
+        main = main_class
+        args = extra_args
+    }
+}

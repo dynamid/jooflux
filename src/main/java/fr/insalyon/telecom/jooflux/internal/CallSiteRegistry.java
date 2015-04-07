@@ -13,8 +13,6 @@
 package fr.insalyon.telecom.jooflux.internal;
 
 import java.lang.invoke.CallSite;
-import java.lang.invoke.VolatileCallSite;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 

@@ -9,3 +9,8 @@ reports
 hotspot.log
 .classpath
 .project
+.gradle
+.idea
+build
+.DS_Store
+

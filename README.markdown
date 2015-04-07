@@ -86,21 +86,19 @@ We welcome contributions, see `CONTRIBUTING.markdown` for instructions.
 JooFlux requires:
 
 * Java SE 7+
-* [Apache Buildr](http://buildr.apache.org/)
+* [Gradle](https://www.gradle.org/)
 
-Because Apache Buildr is written in [Ruby](http://www.ruby-lang.org/), you will need a working
-Ruby installation. We suggest that you manage your environments using [rbenv](http://rbenv.org/)
-and use [JRuby](http://jruby.org/) as your Ruby runtime.
+Building JooFlux is straightforward using Gradle :
 
-Building JooFlux is straightforward using Apache Buildr:
+    gradle clean build
 
-    buildr clean install
+We also have a bunch of custom tasks for testing purposes, e.g.:
 
-We also have a bunch of custom Rake tasks for testing purposes, e.g.:
-
-    buildr test_fibonacci
-    buildr test_counterloop
+    gradle test_fibonacci
+    gradle test_counterloop
     (...)
+
+To display the entire list, run `gradle tasks`.
 
 ## Running JooFlux
 

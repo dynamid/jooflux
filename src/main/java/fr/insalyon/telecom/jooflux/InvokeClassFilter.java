@@ -22,6 +22,8 @@ public class InvokeClassFilter {
             "com/apple/",
             "javax/",
             "fr/insalyon/telecom/jooflux/internal/",
+            "fr/insalyon/telecom/jooflux/tcp/",
+            "org/json/simple/",
             "org/pmw/tinylog/"
     };
 
